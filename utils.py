@@ -5,8 +5,8 @@ import nltk
 
 nltk.download('punkt')
 
-# Define some sample keywords for filtering
-REQUIRED_SKILLS = {"python", "flask", "sql", "machine learning"}
+# Define required skills (can be updated anytime)
+REQUIRED_SKILLS = {"python", "flask", "sql", "machine learning", "html", "css", "data analysis"}
 
 def extract_text(filepath):
     ext = os.path.splitext(filepath)[1].lower()
@@ -16,14 +16,23 @@ def extract_text(filepath):
         with open(filepath, 'rb') as f:
             reader = PyPDF2.PdfReader(f)
             for page in reader.pages:
-                text += page.extract_text()
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text
     elif ext in [".docx", ".doc"]:
         doc = docx.Document(filepath)
         for para in doc.paragraphs:
             text += para.text + "\n"
+    
     return text.lower()
 
 def check_eligibility(text):
-    words = set(nltk.word_tokenize(text))
-    matches = REQUIRED_SKILLS & words
-    return len(matches) >= 3  # e.g. must match at least 3 skills
+    # Tokenize resume text into words
+    words = set(nltk.word_tokenize(text.lower()))
+    
+    # Normalize REQUIRED_SKILLS to lowercase
+    required = set(skill.lower() for skill in REQUIRED_SKILLS)
+    
+    # Check how many skills match
+    matches = required & words
+    return len(matches) >= 3
