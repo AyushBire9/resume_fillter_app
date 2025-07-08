@@ -5,65 +5,128 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Resume Filter - Home</title>
   <style>
+    :root {
+      --bg-light: #f4cef0;
+      --bg-dark: #1e1e1e;
+      --card-light: rgba(255, 255, 255, 0.3);
+      --card-dark: rgba(44, 44, 44, 0.5);
+      --text-dark: #000;
+      --text-light: #f0f0f0;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
       margin: 0;
       padding: 0;
-        background: #f1c1ec;
+      background-image: linear-gradient(to right, var(--bg-light), #dae1ed);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-image: linear-gradient(to right, #f4cef0, #dae1ed);
+      transition: background 0.3s ease;
+    }
+
+    body.dark-mode {
+      background-image: linear-gradient(to right, var(--bg-dark), #2a2a2a);
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 14px;
+      background: none;
+      color: #333;
+      border: 1px solid #888;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    body.dark-mode .toggle-btn {
+      color: #eee;
+      border-color: #aaa;
     }
 
     .container {
-      background-color: rgb(159, 125, 157);
-      padding: 30px 20px;
-      border-radius: 12px;
-      box-shadow: 1px 1px 15px rgb(0, 0, 0);
+      backdrop-filter: blur(12px);
+      background-color: var(--card-light);
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       text-align: center;
-      background-image: linear-gradient(to right, #f2adeb, #c3cfe2);
       width: 90%;
       max-width: 400px;
+      animation: fadeIn 1s ease-in;
+    }
+
+    body.dark-mode .container {
+      background-color: var(--card-dark);
     }
 
     h1 {
-      color: #010102;
-      margin-bottom: 15px;
+      color: var(--text-dark);
+    }
+
+    body.dark-mode h1 {
+      color: var(--text-light);
     }
 
     p {
       font-size: 16px;
       margin-bottom: 25px;
-      color: #332f2f;
+      color: #222;
+    }
+
+    body.dark-mode p {
+      color: #eee;
     }
 
     a.button {
       display: inline-block;
-      padding: 12px 20px;
+      padding: 14px 24px;
       background-color: #2c3b4b;
       color: white;
       border-radius: 8px;
       text-decoration: none;
-      font-size: 16px;
-      transition: background 0.1s ease;
+      font-size: 17px;
+      transition: background 0.2s ease;
     }
 
     a.button:hover {
-      background-color: #202122;
+      background-color: #1d2328;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+
   <div class="container">
     <h1>Welcome to Resume Filter</h1>
     <p>This tool helps companies quickly filter resumes based on job eligibility.</p>
     <a href="/index" class="button">Upload Resume</a>
   </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+    window.onload = () => {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    };
+  </script>
 </body>
 </html>

@@ -5,35 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upload Resume</title>
   <style>
+    :root {
+      --bg-light: #c8d4f5;
+      --bg-dark: #1e1e1e;
+      --card-light: rgba(255, 255, 255, 0.3);
+      --card-dark: rgba(44, 44, 44, 0.5);
+      --text-dark: #000;
+      --text-light: #f0f0f0;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
       margin: 0;
       padding: 0;
-      background: #6c7e98;
+      background-image: linear-gradient(to right, var(--bg-light), #7bd6f2);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-image: linear-gradient(to right, #c8d4f5, #7bd6f2);
+      transition: background 0.3s ease;
+      position: relative;
+    }
+
+    body.dark-mode {
+      background-image: linear-gradient(to right, var(--bg-dark), #2a2a2a);
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 14px;
+      background: none;
+      border: 1px solid #888;
+      color: #333;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    body.dark-mode .toggle-btn {
+      color: #eee;
+      border-color: #aaa;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      background-color: #303434;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .home-btn:hover {
+      background-color: #0a0a0a;
     }
 
     .container {
-      background: #d3cece;
-      padding: 25px;
+      backdrop-filter: blur(12px);
+      background-color: var(--card-light);
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       width: 90%;
       max-width: 450px;
-      border-radius: 12px;
-      box-shadow: 1px 1px 15px rgb(0, 0, 0);
+      animation: fadeIn 1s ease-in;
+    }
+
+    body.dark-mode .container {
+      background-color: var(--card-dark);
     }
 
     h2 {
       text-align: center;
       margin-bottom: 20px;
-      color: #0e0e0f;
+      color: var(--text-dark);
+    }
+
+    body.dark-mode h2 {
+      color: var(--text-light);
     }
 
     form {
@@ -44,6 +104,11 @@
 
     label {
       font-weight: 600;
+      color: #111;
+    }
+
+    body.dark-mode label {
+      color: #e0e0e0;
     }
 
     input[type="text"],
@@ -55,7 +120,7 @@
       background-color: #faf9f9;
     }
 
-    button, .home-btn {
+    button {
       padding: 12px;
       background-color: #303434;
       color: white;
@@ -63,20 +128,10 @@
       border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: block;
     }
 
-    button:hover, .home-btn:hover {
+    button:hover {
       background-color: #0a0a0a;
-    }
-
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 15px;
     }
 
     .result {
@@ -97,9 +152,17 @@
       max-height: 250px;
       overflow-y: auto;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
+  <a href="/" class="home-btn">← Back to Home</a>
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+
   <div class="container">
     <h2>Upload Resume</h2>
     <form action="/upload" method="POST" enctype="multipart/form-data">
@@ -112,10 +175,7 @@
       <label for="resume">Select PDF Resume</label>
       <input type="file" id="resume" name="resume" accept=".pdf" required />
 
-      <div class="btn-group">
-        <button type="submit">Submit</button>
-        <a href="/" class="home-btn">← Back to Home</a>
-      </div>
+      <button type="submit">Submit</button>
     </form>
 
     {% if result %}
@@ -129,5 +189,17 @@
     </div>
     {% endif %}
   </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+    window.onload = () => {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    };
+  </script>
 </body>
 </html>
