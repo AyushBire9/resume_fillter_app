@@ -2,11 +2,14 @@ from flask import Flask, render_template, request
 import os
 from utils import extract_text, check_eligibility
 import nltk
-nltk.download('punkt_tab')
+
+# Correct tokenizer download
+nltk.download('punkt')
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -31,9 +34,8 @@ def upload_resume():
 
         return render_template('index.html', result=result, resume_text=text)
 
-
-
+    return render_template('index.html', result="❌ File not received.")
 
 if __name__ == '__main__':
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
