@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stored Resumes - Admin</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('https://static.vecteezy.com/system/resources/previews/007/278/150/non_2x/dark-background-abstract-with-light-effect-vector.jpg') no-repeat center center/cover;
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: background 0.3s ease;
+        }
+
+        .home-btn:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #ffd166;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd166;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: #ffd166;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .eligible {
+            color: #00ffae;
+            font-weight: bold;
+        }
+
+        .not-eligible {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .resume-text {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .resume-text:hover {
+            background: rgba(255,255,255,0.1);
+            white-space: normal;
+            overflow: visible;
+            position: absolute;
+            z-index: 1000;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 400px;
+        }
+
+        .date {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .no-resumes {
+            text-align: center;
+            padding: 40px;
+            color: #ffd166;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-card {
+                min-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <a href="/" class="home-btn">← Back to Home</a>
+
+    <div class="container">
+        <h1>📊 Stored Resumes Dashboard</h1>
+
+        {% if resumes %}
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-number">{{ resumes|length }}</span>
+                    <span class="stat-label">Total Resumes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ eligible_count }}</span>
+                    <span class="stat-label">Eligible</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ not_eligible_count }}</span>
+                    <span class="stat-label">Not Eligible</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ ats_resumes_count }}</span>
+                    <span class="stat-label">ATS Checked</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name/Source</th>
+                            <th>Contact</th>
+                            <th>Profession</th>
+                            <th>Job Level</th>
+                            <th>Status</th>
+                            <th>ATS Score</th>
+                            <th>Resume Preview</th>
+                            <th>Upload Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resume in resumes %}
+                        <tr>
+                            <td>
+                                {{ resume.name }}
+                                <div style="font-size: 0.8em; opacity: 0.7; margin-top: 4px;">
+                                    {% if resume.profession %}
+                                        ATS Check
+                                    {% else %}
+                                        Resume Upload
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if resume.email %}
+                                    {{ resume.email }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if resume.profession %}
+                                    <span style="background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; display: inline-block; margin: 2px 0;">
+                                        {{ resume.profession|title }}
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if resume.job_level %}
+                                    <span style="background: rgba(255, 211, 102, 0.2); color: #ffd166; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; display: inline-block; margin: 2px 0;">
+                                        {{ resume.job_level|title }}
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if resume.eligible %}
+                                    <span class="eligible">✅ Eligible</span>
+                                {% else %}
+                                    <span class="not-eligible">❌ Not Eligible</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if resume.ats_score %}
+                                    <span style="background: linear-gradient(135deg, #b19cd9, #9d7bc4); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">
+                                        {{ resume.ats_score }}%
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="resume-text" title="{{ resume.resume_text }}">
+                                    {{ resume.resume_text[:100] }}...
+                                </div>
+                            </td>
+                            <td class="date">{{ resume.upload_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="no-resumes">
+                No resumes have been uploaded yet.
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

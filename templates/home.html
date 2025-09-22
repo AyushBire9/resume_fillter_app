@@ -1,132 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resume Filter - Home</title>
-  <style>
-    :root {
-      --bg-light: #f4cef0;
-      --bg-dark: #1e1e1e;
-      --card-light: rgba(255, 255, 255, 0.3);
-      --card-dark: rgba(44, 44, 44, 0.5);
-      --text-dark: #000;
-      --text-light: #f0f0f0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder & ATS Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #2d2d2d 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
 
-    body {
-      margin: 0;
-      padding: 0;
-      background-image: linear-gradient(to right, var(--bg-light), #dae1ed);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      transition: background 0.3s ease;
-    }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at top, rgba(255, 107, 107, 0.1), transparent),
+                        radial-gradient(ellipse at bottom, rgba(255, 142, 83, 0.1), transparent);
+            z-index: -1;
+        }
 
-    body.dark-mode {
-      background-image: linear-gradient(to right, var(--bg-dark), #2a2a2a);
-    }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(12, 12, 12, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    .toggle-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 14px;
-      background: none;
-      color: #333;
-      border: 1px solid #888;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      z-index: 999;
-    }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    body.dark-mode .toggle-btn {
-      color: #eee;
-      border-color: #aaa;
-    }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
 
-    .container {
-      backdrop-filter: blur(12px);
-      background-color: var(--card-light);
-      padding: 30px 25px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-      animation: fadeIn 1s ease-in;
-    }
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
 
-    body.dark-mode .container {
-      background-color: var(--card-dark);
-    }
+        .nav-links a:hover {
+            color: #b19cd9;
+        }
 
-    h1 {
-      color: var(--text-dark);
-    }
+        .hero {
+            text-align: center;
+            padding: 120px 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    body.dark-mode h1 {
-      color: var(--text-light);
-    }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #ffd166);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out;
+        }
 
-    p {
-      font-size: 16px;
-      margin-bottom: 25px;
-      color: #222;
-    }
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
 
-    body.dark-mode p {
-      color: #eee;
-    }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
 
-    a.button {
-      display: inline-block;
-      padding: 14px 24px;
-      background-color: #2c3b4b;
-      color: white;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 17px;
-      transition: background 0.2s ease;
-    }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    a.button:hover {
-      background-color: #1d2328;
-    }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(177, 156, 217, 0.2);
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffd166;
+        }
+
+        .feature-card p {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 1rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(177, 156, 217, 0.4);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+        }
+
+        .about-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4rem 2rem;
+            margin: 4rem 0;
+            border-radius: 20px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .about-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #ffd166;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
 
-  <div class="container">
-    <h1>Welcome to Resume Filter</h1>
-    <p>This tool helps companies quickly filter resumes based on job eligibility.</p>
-    <a href="/index" class="button">Upload Resume</a>
-  </div>
+    <div class="overlay"></div>
 
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    }
-    window.onload = () => {
-      if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-      }
-    };
-  </script>
+    <nav class="navbar">
+        <div class="logo">AI Resume Pro</div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#features">Features</a>
+            <a href="/admin/resumes">Dashboard</a>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <h1>AI-Powered Resume Builder & ATS Checker</h1>
+        <p>
+            Create professional resumes tailored to your career goals and ensure they pass ATS systems.
+            Our AI analyzes your profile and generates optimized resumes that get noticed by recruiters.
+        </p>
+
+        <div style="margin: 2rem 0;">
+            <a href="/create-resume" class="btn btn-primary">🚀 Create Resume</a>
+            <a href="/check-resume" class="btn btn-secondary">✅ Check ATS Score</a>
+        </div>
+    </main>
+
+    <section id="about" class="about-section">
+        <h2>About Our Platform</h2>
+        <div class="about-content">
+            <p>
+                Welcome to the most advanced AI-powered resume platform designed for modern job seekers.
+                Our platform combines cutting-edge artificial intelligence with deep industry knowledge to help you
+                create resumes that not only look professional but also pass through Applicant Tracking Systems (ATS).
+            </p>
+            <p>
+                Whether you're a fresh graduate, career changer, or experienced professional, our AI analyzes your
+                background and creates tailored resumes that highlight your strengths and match job requirements.
+                We also provide comprehensive ATS compatibility checks to ensure your resume gets seen by human recruiters.
+            </p>
+        </div>
+    </section>
+
+    <section id="features" class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Resume Builder</h3>
+            <p>
+                Our advanced AI analyzes your professional background and creates customized resumes
+                tailored to your industry and career goals. Get personalized content suggestions and
+                formatting optimized for your field.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>ATS Optimization</h3>
+            <p>
+                Ensure your resume passes through Applicant Tracking Systems with our comprehensive
+                ATS compatibility checker. Get detailed feedback on keywords, formatting, and structure
+                to maximize your interview chances.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Professional Analytics</h3>
+            <p>
+                Track your resume performance with detailed analytics. See which sections get the most
+                attention, what keywords are working, and get actionable insights to improve your job search strategy.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Multiple Formats</h3>
+            <p>
+                Download your resume in multiple formats including PDF, DOCX, and HTML. Choose from
+                various professional templates and customize colors, fonts, and layouts to match your personal brand.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Secure & Private</h3>
+            <p>
+                Your data is protected with enterprise-grade security. We never share your personal
+                information, and all resume data is encrypted. Your privacy and security are our top priorities.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Lightning Fast</h3>
+            <p>
+                Create professional resumes in minutes, not hours. Our streamlined process and AI
+                assistance mean you can generate multiple resume versions quickly and efficiently.
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2025 AI Resume Pro | Empowering job seekers with AI-driven career tools
+    </footer>
+
 </body>
 </html>

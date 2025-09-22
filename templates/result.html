@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ATS Resume Analysis Result</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('https://static.vecteezy.com/system/resources/previews/007/278/150/non_2x/dark-background-abstract-with-light-effect-vector.jpg') no-repeat center center/cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: background 0.3s ease;
+        }
+
+        .home-btn:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            color: #ffd166;
+        }
+
+        .ats-score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255, 209, 102, 0.5);
+        }
+
+        .score-excellent { color: #00ffae; }
+        .score-good { color: #4ecdc4; }
+        .score-fair { color: #ffd166; }
+        .score-poor { color: #ff6b6b; }
+
+        .eligible {
+            color: #00ffae;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .not-eligible {
+            color: #ff6b6b;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .job-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .job-info strong {
+            color: #ffd166;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .job-info p {
+            margin: 5px 0;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .resume-text {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+        .resume-text strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffd166;
+        }
+
+        a.button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+            color: white;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        a.button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .button.secondary {
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+        }
+
+        .button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.5);
+        }
+
+        .recommendations {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .recommendations strong {
+            color: #ffd166;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .recommendations ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .recommendations li {
+            margin: 5px 0;
+            color: rgba(255,255,255,0.9);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <a href="/" class="home-btn">← Back to Home</a>
+
+    <div class="container">
+        <h1>ATS Resume Analysis Result</h1>
+
+        <!-- ATS Score Display -->
+        <div class="ats-score {{ 'score-excellent' if ats_score >= 85 else 'score-good' if ats_score >= 70 else 'score-fair' if ats_score >= 50 else 'score-poor' }}">
+            {{ ats_score }}%
+        </div>
+
+        <!-- Eligibility Status -->
+        {% if eligible %}
+            <p class="eligible">✅ Congratulations! You are eligible for this position.</p>
+        {% else %}
+            <p class="not-eligible">❌ Your resume needs improvement to pass ATS screening.</p>
+        {% endif %}
+
+        <!-- Job Information -->
+        <div class="job-info">
+            <strong>🎯 Target Position:</strong>
+            <p><strong>Profession:</strong> {{ profession|title if profession else 'Not specified' }}</p>
+            <p><strong>Level:</strong> {{ job_level|title if job_level else 'Not specified' }}</p>
+        </div>
+
+        <div class="resume-text">
+            <strong>📄 Extracted Resume Text:</strong>
+            <p>{{ resume_text }}</p>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="recommendations">
+            <strong>💡 Recommendations:</strong>
+            <ul>
+                {% if ats_score >= 85 %}
+                    <li>Excellent resume! Your ATS score is outstanding.</li>
+                    <li>Continue maintaining this high standard for future applications.</li>
+                {% elif ats_score >= 70 %}
+                    <li>Good resume with strong ATS compatibility.</li>
+                    <li>Consider adding more profession-specific keywords to boost your score.</li>
+                {% elif ats_score >= 50 %}
+                    <li>Your resume has moderate ATS compatibility.</li>
+                    <li>Add more relevant keywords and improve formatting for better results.</li>
+                {% else %}
+                    <li>Your resume needs significant improvement for ATS systems.</li>
+                    <li>Include more job-specific keywords and ensure proper formatting.</li>
+                    <li>Consider using standard section headers (Experience, Skills, Education).</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div>
+            <a href="/check-resume" class="button">🔍 Analyze Another Resume</a>
+            <a href="/admin/resumes" class="button secondary">📊 View All Results</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check ATS Score - AI Resume Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Dark theme colors matching home page */
+            --bg-primary: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #2d2d2d 100%);
+            --bg-secondary: rgba(12, 12, 12, 0.95);
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-item: rgba(255, 255, 255, 0.08);
+            --bg-input: rgba(255, 255, 255, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.9);
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-secondary: rgba(255, 255, 255, 0.2);
+            --border-input: rgba(255, 255, 255, 0.3);
+            --shadow-primary: rgba(0, 0, 0, 0.3);
+            --shadow-card: rgba(0, 0, 0, 0.2);
+            --shadow-button: rgba(177, 156, 217, 0.4);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-primary);
+            box-shadow: 0 2px 10px var(--shadow-primary);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            margin-left: 1.5rem;
+        }
+
+        .nav-links a:hover {
+            color: #b19cd9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .upload-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px var(--shadow-card);
+        }
+
+        .upload-section h1 {
+            color: #ffd166;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .upload-section p {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-secondary);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .upload-area:hover {
+            border-color: #b19cd9;
+            background: rgba(177, 156, 217, 0.1);
+        }
+
+        .upload-area.dragover {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .form-group {
+            margin: 2rem 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid var(--border-input);
+            border-radius: 10px;
+            color: #2d3748;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #b19cd9;
+            box-shadow: 0 0 0 3px rgba(177, 156, 217, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 1rem 0.5rem 1rem 0;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(177, 156, 217, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+        }
+
+        .results-section {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+            display: none;
+            box-shadow: 0 8px 32px var(--shadow-card);
+        }
+
+        .results-section h2 {
+            color: #ffd166;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .score-container {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            position: relative;
+        }
+
+        .score-excellent {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .score-good {
+            background: linear-gradient(135deg, #ffd166, #ff8e53);
+            box-shadow: 0 0 30px rgba(255, 211, 102, 0.3);
+        }
+
+        .score-poor {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .score-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .score-item {
+            background: var(--bg-card-item);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 4px 12px var(--shadow-card);
+        }
+
+        .score-item h4 {
+            color: #ffd166;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-item p {
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .recommendations {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .recommendations h4 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .recommendations ul {
+            list-style: none;
+        }
+
+        .recommendations li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .recommendations li::before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #b19cd9;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .upload-section {
+                padding: 2rem 1rem;
+            }
+
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">AI Resume Pro</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/create-resume">Create Resume</a>
+            <a href="/admin/resumes">Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="upload-section">
+            <h1>Check Your Resume's ATS Score</h1>
+            <p>
+                Upload your resume and get a comprehensive ATS compatibility analysis.
+                Our AI will check your resume against industry standards and provide detailed feedback
+                to improve your chances of getting past applicant tracking systems.
+            </p>
+
+            <form id="atsForm" action="/analyze-resume" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+                <div class="form-group">
+                    <label for="profession">Target Profession/Industry *</label>
+                    <select id="profession" name="profession" required>
+                        <option value="">Select your target profession...</option>
+                        <option value="web-development">Web Development</option>
+                        <option value="data-science">Data Science</option>
+                        <option value="digital-marketing">Digital Marketing</option>
+                        <option value="software-engineering">Software Engineering</option>
+                        <option value="ui-ux-design">UI/UX Design</option>
+                        <option value="project-management">Project Management</option>
+                        <option value="business-analysis">Business Analysis</option>
+                        <option value="content-writing">Content Writing</option>
+                        <option value="graphic-design">Graphic Design</option>
+                        <option value="cybersecurity">Cybersecurity</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="jobLevel">Target Job Level *</label>
+                    <select id="jobLevel" name="jobLevel" required>
+                        <option value="">Select job level...</option>
+                        <option value="entry">Entry Level</option>
+                        <option value="mid">Mid Level</option>
+                        <option value="senior">Senior Level</option>
+                        <option value="lead">Lead/Principal</option>
+                        <option value="executive">Executive</option>
+                    </select>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text">Drop your resume here or click to browse</div>
+                        <div class="upload-hint">Supports PDF, DOCX, DOC formats (Max 5MB)</div>
+                        <input type="file" id="resumeFile" name="resume" class="file-input" accept=".pdf,.docx,.doc" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Analyze Resume</button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your resume with AI...</p>
+            <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 1rem;">This may take a few moments</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <h2>📊 ATS Analysis Results</h2>
+
+            <div class="score-container">
+                <div class="score-circle" id="overallScore">
+                    <span id="scoreValue">85</span>%
+                </div>
+                <h3 id="scoreLabel">Excellent ATS Compatibility</h3>
+                <p id="scoreDescription">Your resume is well-optimized for ATS systems</p>
+            </div>
+
+            <div class="score-details">
+                <div class="score-item">
+                    <h4>🎯 Keyword Optimization</h4>
+                    <p id="keywordScore">Strong keyword matching with industry standards</p>
+                </div>
+
+                <div class="score-item">
+                    <h4>📝 Format & Structure</h4>
+                    <p id="formatScore">Clean, ATS-friendly formatting detected</p>
+                </div>
+
+                <div class="score-item">
+                    <h4>📊 Content Quality</h4>
+                    <p id="contentScore">Well-structured content with clear sections</p>
+                </div>
+
+                <div class="score-item">
+                    <h4>🎨 Visual Elements</h4>
+                    <p id="visualScore">Appropriate use of formatting elements</p>
+                </div>
+            </div>
+
+            <div class="recommendations" id="recommendations">
+                <h4>💡 Recommendations for Improvement</h4>
+                <ul id="recommendationsList">
+                    <li>Consider adding more industry-specific keywords</li>
+                    <li>Ensure consistent date formatting throughout</li>
+                    <li>Add quantifiable achievements where possible</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('resumeFile');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateUploadText(files[0].name);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                updateUploadText(e.target.files[0].name);
+            }
+        });
+
+        function updateUploadText(filename) {
+            const uploadText = uploadArea.querySelector('.upload-text');
+            uploadText.textContent = `Selected: ${filename}`;
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+
+
+
+        function showResults() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+
+            // Generate random but realistic scores
+            const scores = {
+                overall: Math.floor(Math.random() * 40) + 60, // 60-100
+                keyword: Math.floor(Math.random() * 30) + 70, // 70-100
+                format: Math.floor(Math.random() * 25) + 75,  // 75-100
+                content: Math.floor(Math.random() * 35) + 65, // 65-100
+                visual: Math.floor(Math.random() * 40) + 60   // 60-100
+            };
+
+            // Update overall score
+            const scoreValue = document.getElementById('scoreValue');
+            const scoreCircle = document.getElementById('overallScore');
+            const scoreLabel = document.getElementById('scoreLabel');
+            const scoreDescription = document.getElementById('scoreDescription');
+
+            scoreValue.textContent = scores.overall;
+
+            if (scores.overall >= 85) {
+                scoreCircle.className = 'score-circle score-excellent';
+                scoreLabel.textContent = 'Excellent ATS Compatibility';
+                scoreDescription.textContent = 'Your resume is highly optimized for ATS systems';
+            } else if (scores.overall >= 70) {
+                scoreCircle.className = 'score-circle score-good';
+                scoreLabel.textContent = 'Good ATS Compatibility';
+                scoreDescription.textContent = 'Your resume should pass most ATS systems';
+            } else {
+                scoreCircle.className = 'score-circle score-poor';
+                scoreLabel.textContent = 'Needs Improvement';
+                scoreDescription.textContent = 'Your resume may struggle with ATS systems';
+            }
+
+            // Update individual scores
+            document.getElementById('keywordScore').textContent =
+                scores.keyword >= 85 ? 'Strong keyword matching with industry standards' :
+                scores.keyword >= 70 ? 'Good keyword optimization' :
+                'Consider adding more relevant keywords';
+
+            document.getElementById('formatScore').textContent =
+                scores.format >= 85 ? 'Clean, ATS-friendly formatting detected' :
+                scores.format >= 70 ? 'Generally good formatting' :
+                'Some formatting issues detected';
+
+            document.getElementById('contentScore').textContent =
+                scores.content >= 85 ? 'Well-structured content with clear sections' :
+                scores.content >= 70 ? 'Content structure is adequate' :
+                'Content structure needs improvement';
+
+            document.getElementById('visualScore').textContent =
+                scores.visual >= 85 ? 'Appropriate use of formatting elements' :
+                scores.visual >= 70 ? 'Visual elements are acceptable' :
+                'Consider reducing complex visual elements';
+
+            // Generate recommendations
+            const recommendations = [];
+            if (scores.keyword < 80) {
+                recommendations.push('Add more industry-specific keywords relevant to your target role');
+            }
+            if (scores.format < 80) {
+                recommendations.push('Use standard section headings (Experience, Education, Skills)');
+            }
+            if (scores.content < 80) {
+                recommendations.push('Include quantifiable achievements and metrics');
+            }
+            if (scores.visual < 80) {
+                recommendations.push('Avoid tables, columns, and complex graphics');
+            }
+            recommendations.push('Ensure consistent date formatting (MM/YYYY)');
+            recommendations.push('Use standard fonts like Arial, Calibri, or Times New Roman');
+
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
+        }
+    </script>
+
+</body>
+</html>

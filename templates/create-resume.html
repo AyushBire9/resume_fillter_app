@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Resume - AI Resume Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #2d2d2d 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(12, 12, 12, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #b19cd9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-section h2 {
+            color: #ffd166;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        select {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        select option {
+            background: rgba(12, 12, 12, 0.95);
+            color: #ffffff;
+            padding: 0.5rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #b19cd9;
+            box-shadow: 0 0 0 3px rgba(177, 156, 217, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .skill-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            background: rgba(177, 156, 217, 0.2);
+            border-color: #b19cd9;
+        }
+
+        .skill-item.selected {
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+            border-color: #b19cd9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 1rem 0.5rem 1rem 0;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(177, 156, 217, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 8px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 0 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .step.active {
+            background: linear-gradient(90deg, #b19cd9, #9d7bc4, #8a6bb0);
+        }
+
+        .step.completed {
+            background: linear-gradient(90deg, #9d7bc4, #8a6bb0);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #b19cd9;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .preview-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .preview-section h3 {
+            color: #ffd166;
+            margin-bottom: 1rem;
+        }
+
+        .preview-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .skills-container {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">AI Resume Pro</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/check-resume">Check Resume</a>
+            <a href="/admin/resumes">Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: #ffd166;">Create Your Professional Resume</h1>
+
+        <div class="step-indicator">
+            <div class="step active" id="step1">1. Professional Info</div>
+            <div class="step" id="step2">2. Experience</div>
+            <div class="step" id="step3">3. Skills & Education</div>
+            <div class="step" id="step4">4. Generate</div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress" style="width: 25%;"></div>
+        </div>
+
+        <form id="resumeForm">
+            <!-- Step 1: Professional Information -->
+            <div class="form-section" id="section1">
+                <h2>👤 Professional Information</h2>
+
+                <div class="form-group">
+                    <label for="profession">Choose Your Profession *</label>
+                    <select id="profession" name="profession" required>
+                        <option value="">Select your profession...</option>
+                        <option value="web-development">Web Development</option>
+                        <option value="data-science">Data Science</option>
+                        <option value="digital-marketing">Digital Marketing</option>
+                        <option value="software-engineering">Software Engineering</option>
+                        <option value="ui-ux-design">UI/UX Design</option>
+                        <option value="project-management">Project Management</option>
+                        <option value="business-analysis">Business Analysis</option>
+                        <option value="content-writing">Content Writing</option>
+                        <option value="graphic-design">Graphic Design</option>
+                        <option value="cybersecurity">Cybersecurity</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" name="location" placeholder="City, Country" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="linkedin">LinkedIn Profile (Optional)</label>
+                    <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                </div>
+
+                <div class="form-group">
+                    <label for="portfolio">Portfolio/GitHub (Optional)</label>
+                    <input type="url" id="portfolio" name="portfolio" placeholder="https://github.com/yourusername">
+                </div>
+
+                <button type="button" class="btn" onclick="nextStep()">Next →</button>
+            </div>
+
+            <!-- Step 2: Experience -->
+            <div class="form-section" id="section2" style="display: none;">
+                <h2>💼 Work Experience</h2>
+
+                <div class="form-group">
+                    <label for="experienceLevel">Experience Level *</label>
+                    <select id="experienceLevel" name="experienceLevel" required>
+                        <option value="">Select experience level...</option>
+                        <option value="entry">Entry Level (0-2 years)</option>
+                        <option value="mid">Mid Level (2-5 years)</option>
+                        <option value="senior">Senior Level (5-10 years)</option>
+                        <option value="lead">Lead/Principal (10+ years)</option>
+                        <option value="fresher">Fresher</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="currentRole">Current/Most Recent Role *</label>
+                    <input type="text" id="currentRole" name="currentRole" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="company">Current/Previous Company *</label>
+                    <input type="text" id="company" name="company" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="summary">Professional Summary *</label>
+                    <textarea id="summary" name="summary" placeholder="Brief summary of your professional background and key achievements..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="achievements">Key Achievements (Optional)</label>
+                    <textarea id="achievements" name="achievements" placeholder="List your major accomplishments, projects, or metrics..."></textarea>
+                </div>
+
+                <button type="button" class="btn" onclick="prevStep()">← Previous</button>
+                <button type="button" class="btn" onclick="nextStep()">Next →</button>
+            </div>
+
+            <!-- Step 3: Skills & Education -->
+            <div class="form-section" id="section3" style="display: none;">
+                <h2>🎓 Skills & Education</h2>
+
+                <div class="form-group">
+                    <label>Technical Skills</label>
+                    <div class="skills-container" id="skillsContainer">
+                        <!-- Skills will be populated based on profession -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="education">Education *</label>
+                    <input type="text" id="education" name="education" placeholder="e.g., B.Tech Computer Science, MBA Marketing" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="certifications">Certifications (Optional)</label>
+                    <textarea id="certifications" name="certifications" placeholder="List relevant certifications, courses, or training..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="languages">Languages (Optional)</label>
+                    <input type="text" id="languages" name="languages" placeholder="e.g., English (Native), Spanish (Conversational)">
+                </div>
+
+                <button type="button" class="btn" onclick="prevStep()">← Previous</button>
+                <button type="button" class="btn" onclick="nextStep()">Generate Resume →</button>
+            </div>
+
+            <!-- Step 4: Generate & Preview -->
+            <div class="form-section" id="section4" style="display: none;">
+                <h2>🚀 Generate Your Resume</h2>
+
+                <div class="form-group">
+                    <label for="template">Choose Template</label>
+                    <select id="template" name="template">
+                        <option value="modern">Modern Professional</option>
+                        <option value="classic">Classic Executive</option>
+                        <option value="creative">Creative Designer</option>
+                        <option value="tech">Tech-Focused</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="colorScheme">Color Scheme</label>
+                    <select id="colorScheme" name="colorScheme">
+                        <option value="blue">Professional Blue</option>
+                        <option value="red">Dynamic Red</option>
+                        <option value="green">Fresh Green</option>
+                        <option value="purple">Creative Purple</option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="generatePreview()">Preview Resume</button>
+                <button type="button" class="btn" onclick="downloadResume()">Download PDF</button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating your professional resume...</p>
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <h3>📄 Resume Preview</h3>
+            <div class="preview-content" id="previewContent">
+                <!-- Resume preview will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        let selectedSkills = [];
+
+        const professionSkills = {
+            'web-development': ['HTML', 'CSS', 'JavaScript', 'React', 'Node.js', 'Python', 'PHP', 'MySQL', 'MongoDB', 'Git', 'REST APIs', 'Responsive Design'],
+            'data-science': ['Python', 'R', 'SQL', 'Machine Learning', 'Deep Learning', 'Pandas', 'NumPy', 'TensorFlow', 'PyTorch', 'Statistics', 'Data Visualization', 'Tableau'],
+            'digital-marketing': ['SEO', 'SEM', 'Google Analytics', 'Facebook Ads', 'Google Ads', 'Content Marketing', 'Social Media', 'Email Marketing', 'Marketing Automation', 'A/B Testing'],
+            'software-engineering': ['Java', 'Python', 'C++', 'System Design', 'Algorithms', 'Data Structures', 'Microservices', 'Docker', 'Kubernetes', 'AWS', 'CI/CD', 'Testing'],
+            'ui-ux-design': ['Figma', 'Adobe XD', 'Sketch', 'User Research', 'Prototyping', 'Wireframing', 'Usability Testing', 'Design Systems', 'Adobe Creative Suite'],
+            'project-management': ['Agile', 'Scrum', 'Kanban', 'JIRA', 'MS Project', 'Risk Management', 'Stakeholder Management', 'Budget Management', 'Team Leadership'],
+            'business-analysis': ['Requirements Gathering', 'Process Modeling', 'SQL', 'Excel', 'Visio', 'JIRA', 'Confluence', 'UML', 'BPMN', 'Gap Analysis'],
+            'content-writing': ['SEO Writing', 'Copywriting', 'Blog Writing', 'Technical Writing', 'Content Strategy', 'WordPress', 'Grammar', 'Research', 'Editing'],
+            'graphic-design': ['Adobe Photoshop', 'Adobe Illustrator', 'InDesign', 'Branding', 'Typography', 'Color Theory', 'Print Design', 'Digital Design', 'Logo Design'],
+            'cybersecurity': ['Network Security', 'Penetration Testing', 'SIEM', 'Firewall', 'Encryption', 'Risk Assessment', 'Compliance', 'Incident Response', 'Ethical Hacking']
+        };
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+
+            // Update step indicators
+            for (let i = 1; i <= totalSteps; i++) {
+                const step = document.getElementById('step' + i);
+                step.classList.remove('active', 'completed');
+                if (i < currentStep) {
+                    step.classList.add('completed');
+                } else if (i === currentStep) {
+                    step.classList.add('active');
+                }
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                document.getElementById('section' + currentStep).style.display = 'none';
+                currentStep++;
+                document.getElementById('section' + currentStep).style.display = 'block';
+                updateProgress();
+
+                if (currentStep === 3) {
+                    populateSkills();
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.getElementById('section' + currentStep).style.display = 'none';
+                currentStep--;
+                document.getElementById('section' + currentStep).style.display = 'block';
+                updateProgress();
+            }
+        }
+
+        function populateSkills() {
+            const profession = document.getElementById('profession').value;
+            const container = document.getElementById('skillsContainer');
+
+            if (profession && professionSkills[profession]) {
+                container.innerHTML = '';
+                professionSkills[profession].forEach(skill => {
+                    const skillItem = document.createElement('div');
+                    skillItem.className = 'skill-item';
+                    skillItem.textContent = skill;
+                    skillItem.onclick = () => toggleSkill(skillItem, skill);
+                    container.appendChild(skillItem);
+                });
+            }
+        }
+
+        function toggleSkill(element, skill) {
+            const index = selectedSkills.indexOf(skill);
+            if (index > -1) {
+                selectedSkills.splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                selectedSkills.push(skill);
+                element.classList.add('selected');
+            }
+        }
+
+        function generatePreview() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('previewSection').style.display = 'none';
+
+            // Simulate AI processing
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('previewSection').style.display = 'block';
+
+                const formData = new FormData(document.getElementById('resumeForm'));
+                const preview = generateResumePreview(formData);
+                document.getElementById('previewContent').textContent = preview;
+            }, 2000);
+        }
+
+        function generateResumePreview(formData) {
+            const data = Object.fromEntries(formData.entries());
+            data.selectedSkills = selectedSkills;
+
+            return `
+${data.fullName}
+${data.email} | ${data.phone} | ${data.location}
+${data.linkedin || ''} | ${data.portfolio || ''}
+
+PROFESSIONAL SUMMARY
+${data.summary}
+
+WORK EXPERIENCE
+${data.currentRole}
+${data.company}
+• ${data.achievements || 'Led key projects and initiatives'}
+
+TECHNICAL SKILLS
+${selectedSkills.join(' • ')}
+
+EDUCATION
+${data.education}
+
+${data.certifications ? 'CERTIFICATIONS\n' + data.certifications : ''}
+
+${data.languages ? 'LANGUAGES\n' + data.languages : ''}
+            `.trim();
+        }
+
+       function downloadResume() {
+    const content = document.getElementById('previewContent').textContent;
+
+    if (!content) {
+        alert('Please generate the preview first!');
+        return;
+    }
+
+    // Access jsPDF from window.jspdf
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const lines = doc.splitTextToSize(content, 180); // wrap text to page width
+    doc.text(lines, 10, 10); // x=10, y=10
+    doc.save('Resume.pdf');
+}
+
+
+
+        // Initialize
+        updateProgress();
+    </script>
+
+</body>
+</html>

@@ -5,53 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upload Resume</title>
   <style>
-    :root {
-      --bg-light: #c8d4f5;
-      --bg-dark: #1e1e1e;
-      --card-light: rgba(255, 255, 255, 0.3);
-      --card-dark: rgba(44, 44, 44, 0.5);
-      --text-dark: #000;
-      --text-light: #f0f0f0;
-    }
-
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     body {
       margin: 0;
-      padding: 0;
-      background-image: linear-gradient(to right, var(--bg-light), #7bd6f2);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
       min-height: 100vh;
-      transition: background 0.3s ease;
-      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      overflow-x: hidden;
     }
 
-    body.dark-mode {
-      background-image: linear-gradient(to right, var(--bg-dark), #2a2a2a);
-    }
-
-    .toggle-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 14px;
-      background: none;
-      border: 1px solid #888;
-      color: #333;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      z-index: 999;
-    }
-
-    body.dark-mode .toggle-btn {
-      color: #eee;
-      border-color: #aaa;
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
     }
 
     .home-btn {
@@ -59,79 +30,89 @@
       top: 20px;
       left: 20px;
       font-size: 14px;
-      background-color: #303434;
+      background-color: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
       color: white;
       padding: 8px 14px;
-      border: none;
       border-radius: 8px;
       text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: background 0.3s ease;
     }
 
     .home-btn:hover {
-      background-color: #0a0a0a;
+      background-color: rgba(255,255,255,0.3);
     }
 
     .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(12px);
-      background-color: var(--card-light);
-      padding: 30px 25px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      padding: 40px;
+      border-radius: 20px;
+      max-width: 500px;
       width: 90%;
-      max-width: 450px;
-      animation: fadeIn 1s ease-in;
-    }
-
-    body.dark-mode .container {
-      background-color: var(--card-dark);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      animation: fadeIn 1s ease-in-out;
     }
 
     h2 {
-      text-align: center;
+      font-size: 2em;
       margin-bottom: 20px;
-      color: var(--text-dark);
-    }
-
-    body.dark-mode h2 {
-      color: var(--text-light);
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      color: #ffd166;
     }
 
     label {
+      display: block;
       font-weight: 600;
-      color: #111;
-    }
-
-    body.dark-mode label {
-      color: #e0e0e0;
+      text-align: left;
+      margin-top: 15px;
+      color: #fff;
     }
 
     input[type="text"],
     input[type="email"],
     input[type="file"] {
+      width: 100%;
       padding: 10px;
-      border: 1px solid #ccc;
+      margin-top: 6px;
       border-radius: 6px;
-      background-color: #faf9f9;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 1em;
     }
 
-    button {
-      padding: 12px;
-      background-color: #303434;
+    input::file-selector-button {
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.3);
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 4px;
       cursor: pointer;
     }
 
+    input::file-selector-button:hover {
+      background: rgba(255,255,255,0.5);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
     button:hover {
-      background-color: #0a0a0a;
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
     }
 
     .result {
@@ -139,11 +120,11 @@
       margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
-      color: #333;
+      color: #fff;
     }
 
     .resume-text {
-      background: #f8f8f8;
+      background: rgba(255,255,255,0.1);
       padding: 10px;
       margin-top: 10px;
       font-size: 14px;
@@ -151,20 +132,23 @@
       border-radius: 8px;
       max-height: 250px;
       overflow-y: auto;
+      text-align: left;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
+
+  <div class="overlay"></div>
+
   <a href="/" class="home-btn">← Back to Home</a>
-  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
 
   <div class="container">
-    <h2>Upload Resume</h2>
+    <h2>Upload Your Resume</h2>
     <form action="/upload" method="POST" enctype="multipart/form-data">
       <label for="name">Your Name</label>
       <input type="text" id="name" name="name" required />
@@ -190,16 +174,5 @@
     {% endif %}
   </div>
 
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    }
-    window.onload = () => {
-      if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-      }
-    };
-  </script>
 </body>
 </html>

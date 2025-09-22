@@ -2,3 +2,8 @@ Flask
 python-docx
 PyPDF2
 nltk
+Flask-SQLAlchemy
+python-dotenv
+reportlab
+fpdf
+weasyprint
