@@ -23,9 +23,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///resumes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-# Gmail credentials
-SENDER_EMAIL = os.getenv("SENDER_EMAIL")
-SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
+# Gmail credentials (disabled)
+# SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+# SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 
 @app.route('/')
 def home():
@@ -201,7 +201,7 @@ def upload_resume():
             db.session.add(resume)
             db.session.commit()
 
-            send_email(email, name, eligible)
+            # send_email(email, name, eligible)  # Email functionality disabled
 
             # Redirect to result page with query params
             return redirect(url_for('result_page', name=name, eligible=str(eligible).lower(), text=text))
@@ -212,32 +212,32 @@ def upload_resume():
         print("❌ Internal Error:", e)
         return render_template('index.html', result=f"❌ Internal Error: {e}")
 
-def send_email(to_email, name, eligible):
-    try:
-        msg = EmailMessage()
-        msg['Subject'] = 'Resume Eligibility Result'
-        msg['From'] = SENDER_EMAIL
-        msg['To'] = to_email
-
-        status = "✅ You are Eligible!" if eligible else "❌ You are Not Eligible."
-        body = f"""Hello {name},
-
-Thank you for submitting your resume.
-
-Your eligibility status: {status}
-
-Regards,
-Resume Filter Bot"""
-
-        msg.set_content(body)
-
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
-            smtp.send_message(msg)
-
-        print(f"✅ Email sent to {to_email}")
-    except Exception as e:
-        print(f"❌ Email send failed: {e}")
+# def send_email(to_email, name, eligible):
+#     try:
+#         msg = EmailMessage()
+#         msg['Subject'] = 'Resume Eligibility Result'
+#         msg['From'] = SENDER_EMAIL
+#         msg['To'] = to_email
+#
+#         status = "✅ You are Eligible!" if eligible else "❌ You are Not Eligible."
+#         body = f"""Hello {name},
+#
+# Thank you for submitting your resume.
+#
+# Your eligibility status: {status}
+#
+# Regards,
+# Resume Filter Bot"""
+#
+#         msg.set_content(body)
+#
+#         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+#             smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
+#             smtp.send_message(msg)
+#
+#         print(f"✅ Email sent to {to_email}")
+#     except Exception as e:
+#         print(f"❌ Email send failed: {e}")
 
 if __name__ == '__main__':
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
